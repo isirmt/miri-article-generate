@@ -1,7 +1,3 @@
-from pickle import TRUE
-from telnetlib import NOP
-
-
 import os
 
 fArticle = open("./article/20220125.txt")
@@ -18,7 +14,7 @@ for i in range(2, len(areas)):
 
 bText = bArticle.read()
 bTextAfter = bText.replace("***TITLE***", areas[0]).replace("***DATE***",
-                                               areas[1]).replace("***FIRST***", first)
+                                                            areas[1]).replace("***FIRST***", first)
 
 s = ""
 for i in range(2, len(areas)):
