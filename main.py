@@ -1,6 +1,9 @@
 import os
 
-fArticle = open("./article/20220125.txt")
+fileName = 20220125
+
+name = "./article/" + str(fileName) + ".txt"
+fArticle = open(name)
 bArticle = open("./base/base-article.html")
 text = fArticle.read()
 fArticle.close()
