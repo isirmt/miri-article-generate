@@ -8,16 +8,31 @@ bArticle = open("./base/base-article.html")
 text = fArticle.read()
 fArticle.close()
 
+markdown = {
+    "codeBlock": False
+}
+
 areas = text.splitlines()
 
 first = areas[2]
+date = areas[1][0:4] + "-" + areas[1][4:6] + "-" + areas[1][6:8]
 
 for i in range(2, len(areas)):
-    areas[i] = "<p>"+areas[i]+"</p>"
+    if areas[i] == "```":
+        if not markdown["codeBlock"]:
+            areas[i] = "<div class=\"markdown\">"
+        else:
+            areas[i] = "</div>"
+        markdown["codeBlock"] = not markdown["codeBlock"]
+    else:
+        if markdown["codeBlock"]:
+            areas[i] = areas[i].replace(" ", "&nbsp;")
+        areas[i] = areas[i].replace("<", "&lt;").replace(">", "&gt;")
+        areas[i] = "<p>"+areas[i]+"</p>"
 
 bText = bArticle.read()
-bTextAfter = bText.replace("***TITLE***", areas[0]).replace("***DATE***",
-                                                            areas[1]).replace("***FIRST***", first)
+bTextAfter = bText.replace("***TITLE***", areas[0]).replace(
+    "***DATE***", date).replace("***FIRST***", first).replace("***PAGE***", areas[1])
 
 s = ""
 for i in range(2, len(areas)):

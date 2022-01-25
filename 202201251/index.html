@@ -39,7 +39,7 @@
     <meta property="og:title" content="ニュース製作を簡略化しよう" />
     <meta property="og:description" content="こんにちは，井筒ミリです。第二回目の記事の時点で簡略化するのはどうかとは思いますが…" />
     <meta property="og:image" content="https://miri-home-page.vercel.app/article/img/news.png" />
-    <meta property="og:url" content="https://miri-home-page.vercel.app/article/20220125" />
+    <meta property="og:url" content="https://miri-home-page.vercel.app/article/202201251" />
 
 </head>
 
@@ -62,12 +62,80 @@
                     ニュース製作を簡略化しよう
                 </div>
                 <div id="date">
-                    20220125
+                    2022-01-25
                 </div>
             </div>
             <div class="article">
                 <p>こんにちは，井筒ミリです。第二回目の記事の時点で簡略化するのはどうかとは思いますが…</p>
-<p>おはようございます</p>
+<p>端的に言うと，今書かれてある文章は全て自作ツール(?)によって製作されていることになります。</p>
+<p>まずは，記事をメモ帳などのツールで書きましょう。</p>
+<div class="markdown">
+<p>1行目：タイトル</p>
+<p>2行目：日付</p>
+<p>3行目以降：本文</p>
+</div>
+<p>このファイルをページ名(日付).txtで保存し，次のPythonファイルを実行します。</p>
+<div class="markdown">
+<p>import&nbsp;os</p>
+<p></p>
+<p>fileName&nbsp;=&nbsp;20220125</p>
+<p></p>
+<p>name&nbsp;=&nbsp;"./article/"&nbsp;+&nbsp;str(fileName)&nbsp;+&nbsp;".txt"</p>
+<p>fArticle&nbsp;=&nbsp;open(name)</p>
+<p>bArticle&nbsp;=&nbsp;open("./base/base-article.html")</p>
+<p>text&nbsp;=&nbsp;fArticle.read()</p>
+<p>fArticle.close()</p>
+<p></p>
+<p>markdown&nbsp;=&nbsp;{</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;"codeBlock":&nbsp;False</p>
+<p>}</p>
+<p></p>
+<p>areas&nbsp;=&nbsp;text.splitlines()</p>
+<p></p>
+<p>first&nbsp;=&nbsp;areas[2]</p>
+<p>date&nbsp;=&nbsp;areas[1][0:4]&nbsp;+&nbsp;"-"&nbsp;+&nbsp;areas[1][4:6]&nbsp;+&nbsp;"-"&nbsp;+&nbsp;areas[1][6:8]</p>
+<p></p>
+<p>for&nbsp;i&nbsp;in&nbsp;range(2,&nbsp;len(areas)):</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;areas[i]&nbsp;==&nbsp;"```":</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;not&nbsp;markdown["codeBlock"]:</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;areas[i]&nbsp;=&nbsp;"&lt;div&nbsp;class=\"markdown\"&gt;"</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else:</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;areas[i]&nbsp;=&nbsp;"&lt;/div&gt;"</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;markdown["codeBlock"]&nbsp;=&nbsp;not&nbsp;markdown["codeBlock"]</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;else:</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;markdown["codeBlock"]:</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;areas[i]&nbsp;=&nbsp;areas[i].replace("&nbsp;",&nbsp;"&nbsp;")</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;areas[i]&nbsp;=&nbsp;areas[i].replace("&lt;",&nbsp;"&lt;").replace("&gt;",&nbsp;"&gt;")</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;areas[i]&nbsp;=&nbsp;"&lt;p&gt;"+areas[i]+"&lt;/p&gt;"</p>
+<p></p>
+<p>bText&nbsp;=&nbsp;bArticle.read()</p>
+<p>bTextAfter&nbsp;=&nbsp;bText.replace("***TITLE***",&nbsp;areas[0]).replace(</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;"***DATE***",&nbsp;date).replace("***FIRST***",&nbsp;first).replace("***PAGE***",&nbsp;areas[1])</p>
+<p></p>
+<p>s&nbsp;=&nbsp;""</p>
+<p>for&nbsp;i&nbsp;in&nbsp;range(2,&nbsp;len(areas)):</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;s&nbsp;+=&nbsp;areas[i]&nbsp;+&nbsp;"\n"</p>
+<p></p>
+<p>postText&nbsp;=&nbsp;bTextAfter.replace("***MAIN***",&nbsp;s)</p>
+<p></p>
+<p>os.makedirs(areas[1],&nbsp;exist_ok=True)</p>
+<p></p>
+<p>newFilePath&nbsp;=&nbsp;"./"+areas[1]+"/index.html"</p>
+<p></p>
+<p>with&nbsp;open(newFilePath,&nbsp;"w")&nbsp;as&nbsp;f:</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;f.write(postText)</p>
+<p></p>
+<p>bArticle.close()</p>
+</div>
+<p>これにより，記事のページのフォルダ(URLの指定先)とindex.htmlが生成されるのです。</p>
+<p></p>
+<p>簡単な仕組みとしては読み込んだテキストファイルを行ごとに分割し，分割した要素を行ごとに条件分岐で元となるベースファイルの文字列と置き換える。という構造になっています。</p>
+<p></p>
+<p>現在は，このようなプログラムのコードを括って表示するマークダウン風の機能のみ実装済みです。</p>
+<p></p>
+<p>画像などの挿入機能は上の方法を利用した条件分岐で実装予定です。</p>
+<p></p>
+<p>ではでは。</p>
 
             </div>
         </div>
